@@ -4,6 +4,7 @@
     "slug": "weather_native",
     "version": "1.0.0",
     "scheme": "weather_native",
+    "plugins": ["expo-router"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

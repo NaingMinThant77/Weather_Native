@@ -14,7 +14,7 @@ const InputBox = () => {
         name="cloud-search-outline"
         size={26}
         color={Theme.secondaryDark}
-        className="absolute top-2 left-4"
+        className="absolute top-4 left-4"
       />
     </View>
   );
