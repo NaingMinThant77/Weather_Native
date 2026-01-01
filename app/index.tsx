@@ -1,11 +1,19 @@
-import { Text, View } from "react-native";
+import { ImageBackground, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
+//style={{ paddingTop: Platform.OS === "android" ? "24" : "0" }}
 export default function Index() {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-500">
-        Welcome to Nativewind!
-      </Text>
-    </View>
+    <SafeAreaView>
+      <ImageBackground
+        source={require("../assets/icon.png")}
+        className="w-full h-full"
+        blurRadius={6}
+      >
+        <View className="px-8">
+          <Text>Weather Native</Text>
+        </View>
+      </ImageBackground>
+    </SafeAreaView>
   );
 }
