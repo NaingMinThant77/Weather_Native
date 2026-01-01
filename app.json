@@ -3,6 +3,7 @@
     "name": "weather_native",
     "slug": "weather_native",
     "version": "1.0.0",
+    "scheme": "weather_native",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
