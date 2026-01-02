@@ -6,6 +6,8 @@ import Content from "../components/home/content";
 import Info from "../components/home/info";
 import { useEffect, useState } from "react";
 import * as Location from "expo-location";
+import { useWeatherStore } from "../store/weather-store";
+import { getWeatherInfo } from "../utils/weather-api";
 
 type Location = {
   latitude: number;
@@ -16,6 +18,7 @@ export type Weather = {
   current_weather: {
     temperature: number;
     weathercode: number;
+    windspeed: number;
   };
   daily: {
     sunrise: string[];
@@ -29,12 +32,14 @@ export type Weather = {
 };
 
 export default function Index() {
+  const setCurrentWeather = useWeatherStore((state) => state.setCurrentWeather);
+  const setDailyForecast = useWeatherStore((state) => state.setDailyForecast);
+
   const [location, setLocation] = useState<Location>({
     latitude: 16.8409,
     longitude: 96.1735,
   });
-
-  const [weatherInfo, setWeatherInfo] = useState<Weather>();
+  const [loading, setLoading] = useState(false);
   const [city, setCity] = useState<string>("Yangon");
 
   useEffect(() => {
@@ -53,31 +58,41 @@ export default function Index() {
       });
     };
 
-    // Fetching Weather
-    const getWeatherInfo = async () => {
-      try {
-        const res = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&daily=weathercode,temperature_2m_max,sunrise,sunset,windspeed_10m_max&timezone=auto&current_weather=true`
-        );
-        const data = await res.json();
-        setWeatherInfo(data);
-      } catch (error) {
-        console.error("Weather fetch error:", error);
-      }
-    };
-
-    const getReverseGeocode = async () => {
-      const reverseGeocodeResponse = await Location.reverseGeocodeAsync({
-        latitude: location.latitude,
-        longitude: location.longitude,
-      });
-      setCity(reverseGeocodeResponse[0].city!);
-    };
-
     getPermission();
-    getWeatherInfo();
-    getReverseGeocode();
   }, []);
+
+  const getWeather = async () => {
+    const weather = await getWeatherInfo(location.latitude, location.longitude);
+    setCurrentWeather({
+      temperature: weather.current_weather.temperature,
+      weatherCode: weather.current_weather.weathercode,
+      windspeed: weather.current_weather.windspeed,
+    });
+    setDailyForecast({
+      sunrise: weather.daily.sunrise,
+      sunset: weather.daily.sunset,
+      temperature_2m_max: weather.daily.temperature_2m_max,
+      time: weather.daily.time,
+      weathercode: weather.daily.weathercode,
+    });
+  };
+
+  const getReverseGeocode = async () => {
+    const reverseGeocodeResponse = await Location.reverseGeocodeAsync({
+      latitude: location.latitude,
+      longitude: location.longitude,
+    });
+    setCity(
+      reverseGeocodeResponse[0].city! || reverseGeocodeResponse[0].country!
+    );
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    getWeather();
+    getReverseGeocode();
+    setLoading(false);
+  }, [location]);
 
   return (
     <SafeAreaView className="bg-white">
@@ -89,8 +104,8 @@ export default function Index() {
         <View className="px-6">
           <Header cityName={city} />
           <InputBox />
-          {weatherInfo && <Content weatherInfo={weatherInfo} />}
-          <Info weatherInfo={weatherInfo!} />
+          <Content />
+          <Info />
           <Text className="text-center text-secondaryDark text-sm my-8">
             Demo Weather App - Marco
           </Text>
