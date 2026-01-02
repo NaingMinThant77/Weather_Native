@@ -90,7 +90,7 @@ export default function Index() {
           <Header cityName={city} />
           <InputBox />
           {weatherInfo && <Content weatherInfo={weatherInfo} />}
-          <Info />
+          <Info weatherInfo={weatherInfo!} />
           <Text className="text-center text-secondaryDark text-sm my-8">
             Demo Weather App - Marco
           </Text>
