@@ -13,7 +13,7 @@ const Forecast = () => {
         className="w-full h-full"
         blurRadius={6}
       >
-        <View className="px-6">
+        <View className="px-6 flex-1">
           <Header />
           <Today />
           <Info />

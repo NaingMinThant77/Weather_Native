@@ -4,9 +4,37 @@ import Header from "../components/home/header";
 import InputBox from "../components/home/input-box";
 import Content from "../components/home/content";
 import Info from "../components/home/info";
+import { useEffect, useState } from "react";
+import * as Location from "expo-location";
 
-//style={{ paddingTop: Platform.OS === "android" ? "24" : "0" }}
+type Location = {
+  latitude: number;
+  longitude: number;
+};
 export default function Index() {
+  const [location, setLocation] = useState<Location>({
+    latitude: 16.8409,
+    longitude: 96.1735,
+  });
+
+  useEffect(() => {
+    const getPermission = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Please grant location permission to use this app.");
+        return;
+      }
+
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation({
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+      });
+    };
+
+    getPermission();
+  }, []);
+
   return (
     <SafeAreaView className="bg-white">
       <ImageBackground

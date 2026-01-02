@@ -49,7 +49,7 @@ const DummyWeathers: Weather[] = [
 const WList = () => {
   const [forecastData, setForecastData] = useState(DummyWeathers);
   return (
-    <View>
+    <View className="flex-1">
       <Text className="text-2xl font-bold mt-3 ms-3">7 DAYS FORECAST</Text>
       <FlatList
         data={forecastData}
