@@ -1,4 +1,11 @@
-import { Alert, ImageBackground, StatusBar, Text, View } from "react-native";
+import {
+  Alert,
+  ImageBackground,
+  StatusBar,
+  Text,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../components/home/header";
 import InputBox from "../components/home/input-box";
@@ -118,14 +125,21 @@ export default function Index() {
         blurRadius={6}
       >
         <View className="px-6">
-          {!loading && (
+          {loading ? (
+            <View className="items-center justify-center">
+              <ActivityIndicator size="large" color="#ffffff" />
+              <Text className="text-secondaryDark mt-4 font-semibold text-lg">
+                Fetching weather data...
+              </Text>
+            </View>
+          ) : (
             <>
               <Header cityName={city} />
               <InputBox serchLocationByCity={searchLocationByCity} />
               <Content />
               <Info />
               <Text className="text-center text-secondaryDark text-sm my-8">
-                Demo Weather App - CODE HUB{" "}
+                Demo Weather App - CODE HUB
               </Text>
             </>
           )}
