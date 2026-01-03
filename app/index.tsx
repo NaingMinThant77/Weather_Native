@@ -102,13 +102,17 @@ export default function Index() {
         blurRadius={6}
       >
         <View className="px-6">
-          <Header cityName={city} />
-          <InputBox />
-          <Content />
-          <Info />
-          <Text className="text-center text-secondaryDark text-sm my-8">
-            Demo Weather App - Marco
-          </Text>
+          {!loading && (
+            <>
+              <Header cityName={city} />
+              <InputBox />
+              <Content />
+              <Info />
+              <Text className="text-center text-secondaryDark text-sm my-8">
+                Demo Weather App - CODE HUB{" "}
+              </Text>
+            </>
+          )}
         </View>
         <StatusBar barStyle={"dark-content"} />
       </ImageBackground>

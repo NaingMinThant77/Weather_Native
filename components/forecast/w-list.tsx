@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import WItem from "./w-item";
+import { useWeatherStore } from "../../store/weather-store";
+import { DAYS, getWeratherInfoByCode } from "../../utils";
 
 export type Weather = {
   day: string;
@@ -8,56 +9,31 @@ export type Weather = {
   temp: string;
 };
 
-const DummyWeathers: Weather[] = [
-  {
-    day: "Mon",
-    weather: "Cloudy",
-    temp: "26°",
-  },
-  {
-    day: "Tue",
-    weather: "Sunny",
-    temp: "26°",
-  },
-  {
-    day: "Wed",
-    weather: "Sunny",
-    temp: "26°",
-  },
-  {
-    day: "Thu",
-    weather: "Cloudy",
-    temp: "26°",
-  },
-  {
-    day: "Fri",
-    weather: "Sunny",
-    temp: "26°",
-  },
-  {
-    day: "Sat",
-    weather: "Cloudy",
-    temp: "26°",
-  },
-  {
-    day: "Sun",
-    weather: "Sunny",
-    temp: "26°",
-  },
-];
-
 const WList = () => {
-  const [forecastData, setForecastData] = useState(DummyWeathers);
+  const dailyForecast = useWeatherStore((state) => state.daily);
+
   return (
-    <View className="flex-1">
-      <Text className="text-2xl font-bold mt-3 ms-3">7 DAYS FORECAST</Text>
-      <FlatList
-        data={forecastData}
-        renderItem={({ item }) => <WItem w={item} />}
-        keyExtractor={(item) => item.day}
-        className="m-4"
-      />
-    </View>
+    <ScrollView>
+      <View className="flex-1">
+        {dailyForecast.weathercode.map((code, index) => {
+          const temperature = dailyForecast.temperature_2m_max[index];
+          const date = new Date(dailyForecast.time[index]);
+          const dayOfWeek = DAYS[date.getDay()];
+          const condition = getWeratherInfoByCode(code)?.label;
+          const img = getWeratherInfoByCode(code)?.image;
+
+          return (
+            <WItem
+              key={index}
+              temp={temperature}
+              day={dayOfWeek}
+              weatherCodition={condition!}
+              wImage={img}
+            />
+          );
+        })}
+      </View>
+    </ScrollView>
   );
 };
 
