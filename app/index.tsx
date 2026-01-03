@@ -1,4 +1,4 @@
-import { ImageBackground, StatusBar, Text, View } from "react-native";
+import { Alert, ImageBackground, StatusBar, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../components/home/header";
 import InputBox from "../components/home/input-box";
@@ -7,7 +7,7 @@ import Info from "../components/home/info";
 import { useEffect, useState } from "react";
 import * as Location from "expo-location";
 import { useWeatherStore } from "../store/weather-store";
-import { getWeatherInfo } from "../utils/weather-api";
+import { getLocationByCity, getWeatherInfo } from "../utils/weather-api";
 
 type Location = {
   latitude: number;
@@ -35,10 +35,12 @@ export default function Index() {
   const setCurrentWeather = useWeatherStore((state) => state.setCurrentWeather);
   const setDailyForecast = useWeatherStore((state) => state.setDailyForecast);
 
-  const [location, setLocation] = useState<Location>({
-    latitude: 16.8409,
-    longitude: 96.1735,
-  });
+  // const [location, setLocation] = useState<Location>({
+  //   latitude: 16.8409,
+  //   longitude: 96.1735,
+  // });
+  const { latitude, longitude, setLocation } = useWeatherStore();
+
   const [loading, setLoading] = useState(false);
   const [city, setCity] = useState<string>("Yangon");
 
@@ -52,17 +54,21 @@ export default function Index() {
       }
 
       const currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation({
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
-      });
+      // setLocation({
+      //   latitude: currentLocation.coords.latitude,
+      //   longitude: currentLocation.coords.longitude,
+      // });
+      setLocation(
+        currentLocation.coords.latitude,
+        currentLocation.coords.longitude
+      );
     };
 
     getPermission();
   }, []);
 
   const getWeather = async () => {
-    const weather = await getWeatherInfo(location.latitude, location.longitude);
+    const weather = await getWeatherInfo(latitude, longitude);
     setCurrentWeather({
       temperature: weather.current_weather.temperature,
       weatherCode: weather.current_weather.weathercode,
@@ -79,12 +85,22 @@ export default function Index() {
 
   const getReverseGeocode = async () => {
     const reverseGeocodeResponse = await Location.reverseGeocodeAsync({
-      latitude: location.latitude,
-      longitude: location.longitude,
+      latitude,
+      longitude,
     });
     setCity(
       reverseGeocodeResponse[0].city! || reverseGeocodeResponse[0].country!
     );
+  };
+
+  const searchLocationByCity = async (city: string) => {
+    try {
+      const { latitude, longitude } = await getLocationByCity(city);
+      // setLocation({ latitude, longitude });
+      setLocation(latitude, longitude);
+    } catch (error) {
+      Alert.alert(error as string, "Please enter a valid city name.");
+    }
   };
 
   useEffect(() => {
@@ -92,7 +108,7 @@ export default function Index() {
     getWeather();
     getReverseGeocode();
     setLoading(false);
-  }, [location]);
+  }, [latitude, longitude]);
 
   return (
     <SafeAreaView className="bg-white">
@@ -105,7 +121,7 @@ export default function Index() {
           {!loading && (
             <>
               <Header cityName={city} />
-              <InputBox />
+              <InputBox serchLocationByCity={searchLocationByCity} />
               <Content />
               <Info />
               <Text className="text-center text-secondaryDark text-sm my-8">

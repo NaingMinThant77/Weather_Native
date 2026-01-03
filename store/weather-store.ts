@@ -15,6 +15,11 @@ type DailyForecast = {
 };
 
 type WeatherType = {
+  latitude: number;
+  longitude: number;
+
+  setLocation: (lat: number, lon: number) => void;
+
   current_weather: {
     temperature: number;
     weathercode: number;
@@ -32,6 +37,15 @@ type WeatherType = {
 };
 
 export const useWeatherStore = create<WeatherType>((set) => ({
+  latitude: 16.8409,
+  longitude: 96.1735,
+
+  setLocation: (lat, lon) =>
+    set({
+      latitude: lat,
+      longitude: lon,
+    }),
+
   current_weather: {
     temperature: 0,
     weathercode: 0,
