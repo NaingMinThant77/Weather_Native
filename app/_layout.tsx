@@ -6,10 +6,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
   return (
-    <Stack
-      initialRouteName="splash-screen"
-      screenOptions={{ headerShown: false }}
-    >
+    <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="splash-screen" />
       <Stack.Screen name="index" />
       <Stack.Screen name="forecast" />

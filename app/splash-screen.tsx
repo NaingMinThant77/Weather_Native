@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Text, Image } from "react-native";
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -16,25 +16,20 @@ export default function Splash() {
     opacity: opacity.value,
   }));
 
-  useEffect(() => {
-    const prepare = async () => {
-      // ✅ Hide native splash when this screen is ready
-      await SplashScreen.hideAsync();
+  const onLayoutRootView = useCallback(async () => {
+    // ✅ Hide native splash AFTER layout is ready
+    await SplashScreen.hideAsync();
 
-      // Fade in
-      opacity.value = withTiming(1, { duration: 1000 });
+    opacity.value = withTiming(1, { duration: 1000 });
 
-      // Navigate after delay
-      setTimeout(() => {
-        router.replace("/");
-      }, 3000);
-    };
-
-    prepare();
+    setTimeout(() => {
+      router.replace("/");
+    }, 3000);
   }, []);
 
   return (
     <Animated.View
+      onLayout={onLayoutRootView}
       style={[
         {
           flex: 1,
